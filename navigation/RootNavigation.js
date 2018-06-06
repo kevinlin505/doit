@@ -2,14 +2,20 @@ import React from 'react';
 import { Notifications } from 'expo';
 import { createSwitchNavigator } from 'react-navigation';
 import { Provider } from 'react-redux';
-import MainTabNavigator from './MainTabNavigator';
 import registerForPushNotificationsAsync from '../api/registerForPushNotificationsAsync';
-import store from './store/store';
+import AuthStackNavigator from './AuthStackNavigator';
+import MainTabNavigator from './MainTabNavigator';
+import AuthLoadingScreen from '../screens/AuthLoadingScreen';
+import configureStore from '../store/store';
 
 const AppNavigator = createSwitchNavigator({
   // You could add another route here for authentication.
   // Read more at https://reactnavigation.org/docs/en/auth-flow.html
-  Main: MainTabNavigator,
+  AuthLoading: AuthLoadingScreen,
+  Auth: AuthStackNavigator,
+  Main: MainTabNavigator
+}, {
+  initialRouteName: 'AuthLoading'
 });
 
 export default class RootNavigation extends React.Component {
@@ -38,7 +44,7 @@ export default class RootNavigation extends React.Component {
 
   render() {
     return (
-      <Provider store={store}>
+      <Provider store={configureStore()}>
         <AppNavigator />
       </Provider>
     );

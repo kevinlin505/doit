@@ -5,7 +5,6 @@ module.exports = {
     "browser": true,
     "es6": true
   },
-  "extends": "eslint:recommended",
   "globals": {
     "crl8": false,
     "window": false,
@@ -23,7 +22,8 @@ module.exports = {
     "sourceType": "module"
   },
   "plugins": [
-    "react"
+    "react",
+    "react-native"
   ],
   "rules": {
     "arrow-body-style": "off",
@@ -44,7 +44,9 @@ module.exports = {
     "max-len": "off",
     "no-mixed-operators": ["error", { "allowSamePrecedence": true }],
     "no-plusplus": ["error", { "allowForLoopAfterthoughts": true }],
+    "no-underscore-dangle": [2, { "allowAfterThis": true }],
     "no-var": "off",
+    "no-use-before-define": ["error", { "functions": true, "classes": true, "variables": false }],
     "prefer-arrow-callback": ["error", { "allowNamedFunctions": true }],
     "radix": ["error", "as-needed"],
   
