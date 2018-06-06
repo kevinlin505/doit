@@ -1,9 +1,10 @@
 import React from 'react';
 import { Notifications } from 'expo';
 import { createSwitchNavigator } from 'react-navigation';
-
+import { Provider } from 'react-redux';
 import MainTabNavigator from './MainTabNavigator';
 import registerForPushNotificationsAsync from '../api/registerForPushNotificationsAsync';
+import store from './store/store';
 
 const AppNavigator = createSwitchNavigator({
   // You could add another route here for authentication.
@@ -21,7 +22,11 @@ export default class RootNavigation extends React.Component {
   }
 
   render() {
-    return <AppNavigator />;
+    return (
+      <Provider store={store}>
+        <AppNavigator />
+      </Provider>
+    );
   }
 
   _registerForPushNotifications() {

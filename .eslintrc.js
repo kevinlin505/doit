@@ -1,0 +1,66 @@
+module.exports = {
+  "parser": "babel-eslint",
+  "extends": "airbnb",
+  "env": {
+    "browser": true,
+    "es6": true
+  },
+  "extends": "eslint:recommended",
+  "globals": {
+    "crl8": false,
+    "window": false,
+    "document": false,
+    "fetch": false,
+    "fetchJsonp": false,
+    "formData": false
+  },
+  "parserOptions": {
+    "ecmaFeatures": {
+      "experimentalObjectRestSpread": true,
+      "jsx": true
+    },
+    "sourceType": "module"
+  },
+  "plugins": [
+    "react"
+  ],
+  "rules": {
+    "arrow-body-style": "off",
+    "arrow-parens": "off",
+    "class-methods-use-this": "off",
+    "comma-dangle": ["error", "never"],
+    "eol-last": "off",
+    "lines-around-comment": ["error", {
+      "beforeBlockComment": true,
+      "beforeLineComment": true, 
+      "allowBlockStart": true,
+      "allowBlockEnd": true,
+      "allowObjectStart": true,
+      "allowObjectEnd": true,
+      "allowArrayStart": true,
+      "allowArrayEnd": true
+    }],
+    "max-len": "off",
+    "no-mixed-operators": ["error", { "allowSamePrecedence": true }],
+    "no-plusplus": ["error", { "allowForLoopAfterthoughts": true }],
+    "no-var": "off",
+    "prefer-arrow-callback": ["error", { "allowNamedFunctions": true }],
+    "radix": ["error", "as-needed"],
+  
+    // React-specific
+    "react/jsx-filename-extension": [1, { "extensions": [".js", ".jsx"] }],
+    "react/forbid-prop-types": "off",
+    "react/no-array-index-key": "off",
+    "react/sort-comp": [1, {
+      "order": [
+        "static-methods",
+        "lifecycle",
+        "everything-else",
+        "render"
+      ]
+    }],
+    
+    // Accessibility
+    "jsx-a11y/no-static-element-interactions": "off"
+  }
+};
