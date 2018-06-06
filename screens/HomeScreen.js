@@ -89,9 +89,9 @@ export default class HomeScreen extends React.Component {
   logIn = async () => {
     const {
       type,
-      token,
+      token
     } = await Expo.Facebook.logInWithReadPermissionsAsync('1989280654717333', {
-      permissions: ['public_profile'],
+      permissions: ['public_profile']
     });
     
     if (type === 'success') {
@@ -112,20 +112,20 @@ export default class HomeScreen extends React.Component {
     }
   }
 
+  _handleLearnMorePress = () => {
+    WebBrowser.openBrowserAsync('https://docs.expo.io/versions/latest/guides/development-mode');
+  };
+
+  _handleHelpPress = () => {
+    WebBrowser.openBrowserAsync(
+      'https://docs.expo.io/versions/latest/guides/up-and-running.html#can-t-see-your-changes'
+    );
+  };
+
   render() {
     return (
       <View style={styles.container}>
         <ScrollView style={styles.container} contentContainerStyle={styles.contentContainer}>
-          <View style={styles.welcomeContainer}>
-            <Image
-              source={
-                __DEV__
-                  ? require('../assets/images/robot-dev.png')
-                  : require('../assets/images/robot-prod.png')
-              }
-              style={styles.welcomeImage}
-            />
-          </View>
           <Button onPress={this.logIn} title="Sign in to Facebook" />
           <Text>{ this.state.name }</Text>
           <Button title="Test" onPress={this.handleButtonClick}>
@@ -146,16 +146,6 @@ export default class HomeScreen extends React.Component {
       </View>
     );
   }
-
-  _handleLearnMorePress = () => {
-    WebBrowser.openBrowserAsync('https://docs.expo.io/versions/latest/guides/development-mode');
-  };
-
-  _handleHelpPress = () => {
-    WebBrowser.openBrowserAsync(
-      'https://docs.expo.io/versions/latest/guides/up-and-running.html#can-t-see-your-changes'
-    );
-  };
 }
 
 const styles = StyleSheet.create({

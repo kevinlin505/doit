@@ -12,7 +12,8 @@ module.exports = {
     "document": false,
     "fetch": false,
     "fetchJsonp": false,
-    "formData": false
+    "formData": false,
+    "Expo": false
   },
   "parserOptions": {
     "ecmaFeatures": {
