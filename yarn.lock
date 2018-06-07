@@ -5172,6 +5172,14 @@ react-native-vector-icons@4.5.0:
     prop-types "^15.5.10"
     yargs "^8.0.2"
 
+react-native-vector-icons@^4.6.0:
+  version "4.6.0"
+  resolved "https://registry.yarnpkg.com/react-native-vector-icons/-/react-native-vector-icons-4.6.0.tgz#e4014311ffa6de397d914ffc31b7097a874cc8d5"
+  dependencies:
+    lodash "^4.0.0"
+    prop-types "^15.5.10"
+    yargs "^8.0.2"
+
 "react-native@https://github.com/expo/react-native/archive/sdk-27.0.0.tar.gz":
   version "0.55.2"
   resolved "https://github.com/expo/react-native/archive/sdk-27.0.0.tar.gz#13850be33f38b0ddc7257a4a30109a41c6305a76"
@@ -5370,7 +5378,7 @@ redux-thunk@2.3.0:
   version "2.3.0"
   resolved "https://registry.yarnpkg.com/redux-thunk/-/redux-thunk-2.3.0.tgz#51c2c19a185ed5187aaa9a2d08b666d0d6467622"
 
-redux-wait-for-state@^2.0.0:
+redux-wait-for-state@2.0.0:
   version "2.0.0"
   resolved "https://registry.yarnpkg.com/redux-wait-for-state/-/redux-wait-for-state-2.0.0.tgz#46593e714aaa9111a0efbcc79da71e1258522c82"
 

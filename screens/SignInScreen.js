@@ -5,9 +5,9 @@ import { bindActionCreators } from 'redux';
 import {
   Button,
   StyleSheet,
-  Text,
   View
 } from 'react-native';
+import { FormLabel, FormInput, FormValidationMessage } from 'react-native-elements';
 import { actions as userActions } from '../providers/user';
 
 class SignInScreen extends React.Component {
@@ -21,6 +21,7 @@ class SignInScreen extends React.Component {
   }
 
   state = {
+    email: '',
     loginError: ''
   }
 
@@ -33,12 +34,19 @@ class SignInScreen extends React.Component {
     }
   };
 
+  handleInputChange = (event) => {
+
+    this.setState({ email: event.target.value });
+  }
+
   render() {
     return (
       <View style={styles.container}>
-        { this.state.loginError &&
-          <Text>{ this.state.loginError }</Text>
-        }
+        <FormLabel>Email</FormLabel>
+        <FormInput value={this.state.email} onChangeText={this.handleInputChange} />
+        <FormLabel>Password</FormLabel>
+        <FormInput value={this.state.password} onChangeText={this.handleInputChange} />
+        <FormValidationMessage>{ this.state.loginError }</FormValidationMessage>
         <Button title="Sign in!" onPress={this._signInAsync} />
       </View>
     );
