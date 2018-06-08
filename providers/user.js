@@ -1,17 +1,15 @@
-import {
-  createTask,
-  initializeFireBase,
-  loginWithFacebookAuthAsync,
-  retrieveAllUserTasksWithId,
-  retrieveDataWithCredential
-} from '../api/userApi';
+import API from '../api/userApi';
 
 export const types = {
   GET_USER_TASKS: 'GET_USER_TASKS',
   LOGIN_SUCESS: 'LOGIN_SUCESS',
   LOGIN_ERROR: 'LOGIN_ERROR',
+
+  SIGNUP_USER: 'SIGNUP_USER',
   UPDATE_USER: 'UPDATE_USER',
-  VALIDATE_USER: 'VALIDATE_USER'
+  VALIDATE_USER: 'VALIDATE_USER',
+
+  INIT_FIREBASE: 'INIT_FIREBASE'
 };
 
 const initialState = {};
@@ -39,6 +37,13 @@ export default function reducer(state = initialState, action) {
       };
     }
 
+    case types.SIGNUP_USER: {
+      return {
+        ...state,
+        ...action
+      };
+    }
+
     case types.UPDATE_USER: {
       return {
         ...state,
@@ -46,10 +51,18 @@ export default function reducer(state = initialState, action) {
         name: action.name
       };
     }
+
     case types.VALIDATE_USER: {
       return {
         ...state,
         isUserValidate: action.isValid
+      };
+    }
+
+    case types.INIT_FIREBASE: {
+      return {
+        ...state,
+        ...action
       };
     }
 
@@ -65,7 +78,7 @@ export const actions = {
     };
 
     try {
-      await createTask(taskData);
+      await API.createTask(taskData);
     } catch (error) {
       throw error;
     }
@@ -73,7 +86,7 @@ export const actions = {
 
   getUserTasks: () => async (dispatch, getState) => {
     const userId = getState().user.id;
-    const tasks = await retrieveAllUserTasksWithId(userId);
+    const tasks = await API.retrieveAllUserTasksWithId(userId);
 
     return dispatch({
       type: types.GET_USER_TASKS,
@@ -81,9 +94,19 @@ export const actions = {
     });
   },
 
+  signUpWithEmailAndPassword: (email, password) => (dispatch) => {
+    dispatch({
+      type: types.SIGNUP_USER
+    });
+
+    console.log(email, password);
+
+    return API.createUserWithEmailAndPassword(email, password);
+  },
+
   loginWithFacebook: () => async (dispatch) => {
     try {
-      const userInfo = await loginWithFacebookAuthAsync();
+      const userInfo = await API.loginWithFacebookAuthAsync();
 
       dispatch({
         type: types.LOGIN_SUCESS
@@ -97,6 +120,14 @@ export const actions = {
     }
   },
 
+  initFirebase: () => async (dispatch) => {
+    dispatch({
+      type: types.INIT_FIREBASE
+    });
+
+    return API.initializeFireBase();
+  },
+
   validateUser: (token) => async (dispatch) => {
     if (!token) {
       dispatch({
@@ -108,8 +139,7 @@ export const actions = {
     }
 
     try {
-      initializeFireBase();
-      const userInfo = await retrieveDataWithCredential(token);
+      const userInfo = await API.retrieveDataWithCredential(token);
 
       dispatch({
         type: types.VALIDATE_USER,

@@ -16,6 +16,7 @@ import {
 } from 'react-native-elements';
 import Icon from 'react-native-vector-icons/FontAwesome';
 import { actions as userActions } from '../providers/user';
+import validation from '../helpers/validation';
 import Colors from '../constants/Colors';
 import BG_IMAGE from '../assets/images/login_screen.jpg';
 
@@ -32,6 +33,7 @@ class SignInScreen extends React.Component {
     isConfirmationPasswordValid: true,
     isEmailValid: true,
     isPasswordValid: true,
+    registrationError: '',
     showLoading: false
   }
 
@@ -44,11 +46,17 @@ class SignInScreen extends React.Component {
     }
   };
 
-  handleInputChange = (val) => this.setState({ email: val })
+  handleEmailChange = (val) => this.setState({ email: val })
   handlePasswordChange = (val) => this.setState({ password: val })
 
-  submitLoginCredentials = () => {
-
+  submitLoginCredentials = async () => {
+    try {
+      const status = await this.props.actions.user.signUpWithEmailAndPassword(this.state.email, this.state.password);
+      console.log(status);
+    } catch (error) {
+      console.log(error.code);
+      this.setState({ registrationError: validation.registrationValidation(error.code) });
+    }
   }
 
   _validateEmail = () => {
@@ -81,7 +89,14 @@ class SignInScreen extends React.Component {
   }
 
   render() {
-    const { email, isEmailValid, isPasswordValid, password, showLoading } = this.state;
+    const {
+      email,
+      isEmailValid,
+      isPasswordValid,
+      password,
+      registrationError,
+      showLoading
+    } = this.state;
 
     return (
       <View style={styles.container}>
@@ -137,7 +152,7 @@ class SignInScreen extends React.Component {
                   onSubmitEditing={this._validatePassword}
                   placeholderTextColor="white"
                   errorStyle={styles.error}
-                  errorMessage={isPasswordValid ? null : "Password need to be at least 8 characters"}
+                  errorMessage={registrationError}
                 />
               </View>
               <Button

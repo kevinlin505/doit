@@ -25,6 +25,7 @@ class AuthLoadingScreen extends React.Component {
   _bootstrapAsync = async () => {
     const { actions, navigation } = this.props;
 
+    const firebaseStatus = await actions.user.initFirebase();
     const userToken = await AsyncStorage.getItem('userToken');
     const isValidated = await actions.user.validateUser(userToken);
 
