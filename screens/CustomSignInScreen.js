@@ -131,7 +131,7 @@ export default class CustomSignInScreen extends Component {
     } = this.state;
     const isLoginPage = selectedCategory === 0;
     const isSignUpPage = selectedCategory === 1;
-    console.log(this.state.fontLoaded);
+
     return (
       <View style={styles.container}>
         <ImageBackground
@@ -140,7 +140,7 @@ export default class CustomSignInScreen extends Component {
         >
           {this.state.fontLoaded ?
             <View>
-              <KeyboardAvoidingView contentContainerStyle={styles.loginContainer} behavior='position'>
+              <KeyboardAvoidingView contentContainerStyle={styles.loginContainer} behavior='padding'>
                 <View style={styles.titleContainer}>
                   <View style={{flexDirection: 'row'}}>
                     <Text style={styles.titleText}>BEAUX</Text>
@@ -175,6 +175,14 @@ export default class CustomSignInScreen extends Component {
                 </View>
                 <View style={styles.formContainer}>
                   <Input
+                    leftIcon={
+                      <Icon
+                        name='envelope-o'
+                        color='rgba(0, 0, 0, 0.38)'
+                        size={25}
+                        style={{backgroundColor: 'transparent'}}
+                      />
+                    }
                     value={email}
                     keyboardAppearance='light'
                     autoFocus={false}
@@ -191,6 +199,14 @@ export default class CustomSignInScreen extends Component {
                     errorMessage={isEmailValid ? null : 'Please enter a valid email address'}
                   />
                   <Input
+                    leftIcon={
+                      <SimpleIcon
+                        name='lock'
+                        color='rgba(0, 0, 0, 0.38)'
+                        size={25}
+                        style={{backgroundColor: 'transparent'}}
+                      />
+                    }
                     value={password}
                     keyboardAppearance='light'
                     autoCapitalize='none'
@@ -216,6 +232,7 @@ export default class CustomSignInScreen extends Component {
                           style={{backgroundColor: 'transparent'}}
                         />
                       }
+                      type="password"
                       value={passwordConfirmation}
                       secureTextEntry={true}
                       keyboardAppearance='light'

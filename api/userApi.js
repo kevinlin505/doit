@@ -1,18 +1,23 @@
 import { AsyncStorage } from 'react-native';
 import * as firebase from 'firebase';
+import Firebase from '../constants/Firebase';
 
 // Initialize Firebase
 const config = {
-  apiKey: 'AIzaSyCI0Y-Eypm0b3IHONj3rHzTM4kV37CYwco',
-  authDomain: 'doit-90d46.firebaseapp.com',
-  databaseURL: 'https://doit-90d46.firebaseio.com',
-  projectId: 'doit-90d46',
-  storageBucket: 'doit-90d46.appspot.com',
-  messagingSenderId: '918750318336'
+  apiKey: Firebase.apiKey,
+  authDomain: Firebase.authDomain,
+  databaseURL: Firebase.databaseURL,
+  projectId: Firebase.projectId,
+  storageBucket: Firebase.storageBucket,
+  messagingSenderId: Firebase.messagingSenderId
 };
 
-export const initializeFireBase = () => {
+export const initializeFireBase = async () => {
+  // Initialize firebase connection
   firebase.initializeApp(config);
+
+  // State will be persisted even when the activity is destroyed in react-native.
+  await firebase.auth().setPersistence(firebase.auth.Auth.Persistence.LOCAL);
 };
 
 export const createTask = async (taskData) => {

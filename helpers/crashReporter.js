@@ -5,7 +5,7 @@ const logger = store => next => action => {
   return result;
 };
 
-export const crashReporter = () => next => action => {
+const crashReporter = () => next => action => {
   try {
     return next(action);
   } catch (err) {
