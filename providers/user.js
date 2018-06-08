@@ -1,4 +1,4 @@
-import API from '../api/userApi';
+import db from '../models/_db';
 
 export const types = {
   GET_USER_TASKS: 'GET_USER_TASKS',
@@ -78,7 +78,7 @@ export const actions = {
     };
 
     try {
-      await API.createTask(taskData);
+      await db.task().createTask(taskData);
     } catch (error) {
       throw error;
     }
@@ -86,7 +86,7 @@ export const actions = {
 
   getUserTasks: () => async (dispatch, getState) => {
     const userId = getState().user.id;
-    const tasks = await API.retrieveAllUserTasksWithId(userId);
+    const tasks = await db.task().retrieveAllUserTasksWithId(userId);
 
     return dispatch({
       type: types.GET_USER_TASKS,
@@ -99,14 +99,12 @@ export const actions = {
       type: types.SIGNUP_USER
     });
 
-    console.log(email, password);
-
-    return API.createUserWithEmailAndPassword(email, password);
+    return db.auth().createUserWithEmailAndPassword(email, password);
   },
 
   loginWithFacebook: () => async (dispatch) => {
     try {
-      const userInfo = await API.loginWithFacebookAuthAsync();
+      const userInfo = await db.auth().loginWithFacebookAuthAsync();
 
       dispatch({
         type: types.LOGIN_SUCESS
@@ -125,7 +123,7 @@ export const actions = {
       type: types.INIT_FIREBASE
     });
 
-    return API.initializeFireBase();
+    return db.initializeFireBase();
   },
 
   validateUser: (token) => async (dispatch) => {
@@ -139,7 +137,7 @@ export const actions = {
     }
 
     try {
-      const userInfo = await API.retrieveDataWithCredential(token);
+      const userInfo = await db.task().retrieveDataWithCredential(token);
 
       dispatch({
         type: types.VALIDATE_USER,
