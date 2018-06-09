@@ -55,6 +55,7 @@ module.exports = {
     "react/jsx-filename-extension": [1, { "extensions": [".js", ".jsx"] }],
     "react/forbid-prop-types": "off",
     "react/no-array-index-key": "off",
+    "react/no-did-mount-set-state": "off",
     "react/sort-comp": [1, {
       "order": [
         "static-methods",

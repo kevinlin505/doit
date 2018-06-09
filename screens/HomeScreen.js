@@ -3,7 +3,6 @@ import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
 import {
-  AsyncStorage,
   Button,
   ScrollView,
   StyleSheet,
@@ -11,7 +10,7 @@ import {
   View
 } from 'react-native';
 import { WebBrowser } from 'expo';
-import { actions as userActions } from '../providers/user';
+import { actions as authActions } from '../providers/auth';
 
 class HomeScreen extends React.Component {
   static navigationOptions = {
@@ -38,9 +37,11 @@ class HomeScreen extends React.Component {
     // this.storeHighScore(user, 554);
   }
 
-  logout = () => {
-    AsyncStorage.removeItem('userToken');
-    this.props.navigation.navigate('Auth');
+  logout = async () => {
+    const { actions, navigation } = this.props;
+
+    await actions.auth.logout();
+    navigation.navigate('Auth');
   }
 
   // setupHighscoreListener() {
@@ -69,11 +70,11 @@ class HomeScreen extends React.Component {
       body
     };
 
-    await this.props.actions.user.createATask(task);
+    // await this.props.actions.user.createATask(task);
   }
 
   getMyTask = async () => {
-    await this.props.actions.user.getUserTasks();
+    // await this.props.actions.user.getUserTasks();
   }
 
   _handleLearnMorePress = () => {
@@ -117,7 +118,7 @@ export default connect((state) => {
 }, (dispatch) => {
   return {
     actions: {
-      user: bindActionCreators(userActions, dispatch)
+      auth: bindActionCreators(authActions, dispatch)
     }
   };
 })(HomeScreen);

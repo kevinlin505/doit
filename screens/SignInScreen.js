@@ -3,7 +3,6 @@ import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
 import {
-  Dimensions,
   ImageBackground,
   KeyboardAvoidingView,
   LayoutAnimation,
@@ -12,13 +11,15 @@ import {
 } from 'react-native';
 import {
   Button,
-  Input
+  Input,
+  Text
 } from 'react-native-elements';
 import Icon from 'react-native-vector-icons/FontAwesome';
 import { actions as authActions } from '../providers/auth';
 import { actions as userActions } from '../providers/user';
 import Colors from '../constants/Colors';
 import Layout from '../constants/Layout';
+import Messages from '../constants/Messages';
 import BG_IMAGE from '../assets/images/login_screen.jpg';
 
 class SignInScreen extends React.Component {
@@ -36,12 +37,36 @@ class SignInScreen extends React.Component {
     isConfirmPasswordValid: true,
     isEmailValid: true,
     isPasswordValid: true,
+    isRegistrationFlow: false,
     showLoading: false
+  }
+
+  componentDidMount() {
+    this.setState(this.defaultState());
+  }
+
+  defaultState = () => {
+    return {
+      authError: '',
+      confirmPassword: '',
+      email: '',
+      password: '',
+      isAccountCreated: false,
+      isConfirmPasswordValid: true,
+      isEmailValid: true,
+      isPasswordValid: true,
+      isRegistrationFlow: false,
+      showLoading: false
+    };
   }
 
   handleEmailChange = (val) => this.setState({ email: val })
   handlePasswordChange = (val) => this.setState({ password: val })
   handleConfirmPasswordChange = (val) => this.setState({ confirmPassword: val })
+  handleFormChange = () => this.setState({
+    ...this.defaultState,
+    isRegistrationFlow: !this.state.isRegistrationFlow
+  })
 
   submitLoginForm = async () => {
     const error = await this.props.actions.auth.loginWithCredential(this.state.email, this.state.password);
@@ -107,27 +132,30 @@ class SignInScreen extends React.Component {
       showLoading
     } = this.state;
 
+    const userIcon = (<Icon name="user-o" color="rgba(171, 189, 219, 1)" size={25} />);
+    const lockIcon = (<Icon name="lock" color="rgba(171, 189, 219, 1)" size={25} />);
+    const btnGradient = {
+      colors: [Colors.accentColor, Colors.accentColorLight],
+      start: [1, 0],
+      end: [0.2, 0]
+    };
+
     return (
       <View style={styles.container}>
         <ImageBackground
           source={BG_IMAGE}
           style={styles.bgImage}
         >
-          <KeyboardAvoidingView behavior="padding" enabled>
+          <KeyboardAvoidingView behavior="position">
             <View style={styles.loginContainer}>
-              <View style={styles.loginInput}>
+              <View style={styles.formView}>
                 <Input
-                  leftIcon={
-                    <Icon
-                      name="user-o"
-                      color="rgba(171, 189, 219, 1)"
-                      size={25}
-                    />
-                  }
-                  containerStyle={styles.inputContainer}
+                  leftIcon={userIcon}
+                  containerStyle={styles.inputContainerOuter}
+                  inputContainerStyle={styles.inputContainerInner}
+                  inputStyle={styles.input}
                   onChangeText={this.handleEmailChange}
                   value={email}
-                  inputStyle={styles.input}
                   keyboardAppearance="light"
                   placeholder="Email"
                   autoCapitalize="none"
@@ -137,20 +165,15 @@ class SignInScreen extends React.Component {
                   onSubmitEditing={this._validateEmail}
                   placeholderTextColor="white"
                   errorStyle={styles.error}
-                  errorMessage={isEmailValid ? null : "Please enter a valid email address"}
+                  errorMessage={isEmailValid ? null : Messages.emailValidation}
                 />
                 <Input
-                  leftIcon={
-                    <Icon
-                      name="lock"
-                      color="rgba(171, 189, 219, 1)"
-                      size={25}
-                    />
-                  }
-                  containerStyle={styles.inputContainer}
+                  leftIcon={lockIcon}
+                  containerStyle={styles.inputContainerOuter}
+                  inputContainerStyle={styles.inputContainerInner}
+                  inputStyle={styles.input}
                   onChangeText={this.handlePasswordChange}
                   value={password}
-                  inputStyle={styles.input}
                   secureTextEntry
                   keyboardAppearance="light"
                   placeholder="Password"
@@ -161,51 +184,46 @@ class SignInScreen extends React.Component {
                   onSubmitEditing={this._validateConfirmPassword}
                   placeholderTextColor="white"
                   errorStyle={styles.error}
-                  errorMessage={isPasswordValid ? null : "Password must be 8 chracters or longer"}
+                  errorMessage={isPasswordValid ? null : Messages.passwordValidation}
                 />
                 { isRegistrationFlow &&
                   <Input
-                    leftIcon={
-                      <Icon
-                        name="lock"
-                        color="rgba(171, 189, 219, 1)"
-                        size={25}
-                      />
-                    }
-                    containerStyle={styles.inputContainer}
+                    leftIcon={lockIcon}
+                    containerStyle={styles.inputContainerOuter}
+                    inputContainerStyle={styles.inputContainerInner}
+                    inputStyle={styles.input}
                     onChangeText={this.handleConfirmPasswordChange}
                     value={password}
-                    inputStyle={styles.input}
                     secureTextEntry
                     keyboardAppearance="light"
-                    placeholder="Confirn password"
+                    placeholder="Confirm password"
                     autoCapitalize="none"
                     keyboardType="default"
                     returnKeyType="done"
-                    ref={input => this.confirmPasswordInput = input}
+                    ref={input => (this.confirmPasswordInput = input)}
                     onSubmitEditing={isRegistrationFlow ? this._validateConfirmPassword : null}
                     placeholderTextColor="white"
                     errorStyle={styles.error}
-                    errorMessage={isPasswordValid ? null : "Password must be 8 chracters or longer"}
+                    errorMessage={isConfirmPasswordValid ? null : Messages.confirmPasswordValidation}
                   />
                 }
+                <Text style={styles.error}>{ authError }</Text>
+                <Button
+                  title={isRegistrationFlow ? 'SIGN UP' : 'LOG IN'}
+                  activeOpacity={1}
+                  linearGradientProps={btnGradient}
+                  onPress={this.submitLoginForm}
+                  loading={showLoading}
+                  loadingProps={{ size: 'small', color: 'white' }}
+                  disabled={!email || !password}
+                  buttonStyle={styles.button}
+                  containerStyle={styles.buttonContainer}
+                  titleStyle={styles.buttonTitle}
+                />
+                <Text style={styles.createAccount} onPress={this.handleFormChange}>
+                  { isRegistrationFlow ? Messages.haveAccount : Messages.createAccount }
+                </Text>
               </View>
-              <Button
-                title="LOG IN"
-                activeOpacity={1}
-                linearGradientProps={{
-                  colors: [Colors.accentColor, Colors.accentColorLight],
-                  start: [1, 0],
-                  end: [0.2, 0]
-                }}
-                onPress={this.submitLoginForm}
-                loading={showLoading}
-                loadingProps={{ size: 'small', color: 'white' }}
-                disabled={!email && password.length < 8}
-                buttonStyle={styles.button}
-                containerStyle={styles.buttonContainer}
-                titleStyle={styles.buttonTitle}
-              />
             </View>
           </KeyboardAvoidingView>
         </ImageBackground>
@@ -229,20 +247,23 @@ const styles = StyleSheet.create({
   },
   loginContainer: {
     width: Layout.window.width,
-    height: 220,
+    height: 250,
     backgroundColor: 'transparent'
   },
-  loginInput: {
+  formView: {
     flex: 1,
     justifyContent: 'center',
     alignItems: 'center'
   },
+  inputContainerOuter: {
+    marginVertical: 5
+  },
+  inputContainerInner: {
+    borderColor: Colors.dividerColor
+  },
   input: {
     marginLeft: 10,
     color: 'white'
-  },
-  inputContainer: {
-    marginVertical: 10
   },
   label: {
     color: Colors.white
@@ -252,7 +273,8 @@ const styles = StyleSheet.create({
     fontSize: 16
   },
   buttonContainer: {
-    flex: -1
+    marginTop: 20,
+    marginBottom: 5
   },
   buttonTitle: {
     fontWeight: 'bold',
@@ -264,6 +286,13 @@ const styles = StyleSheet.create({
     width: 250,
     borderWidth: 0,
     borderRadius: 50
+  },
+  createAccount: {
+    textAlign: 'center',
+    marginVertical: 10,
+    color: Colors.white,
+    fontSize: 14,
+    fontWeight: 'bold'
   },
   error: {
     textAlign: 'center',

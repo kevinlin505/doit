@@ -83,6 +83,7 @@ export const actions = {
       return error.message;
     }
   },
+  logout: () => () => db.auth().signOut(),
   sendEmailVerification: () => () => db.auth().sendEmailVerification(),
   signUpWithEmailAndPassword: (email, password) => () => db.auth().createUserWithEmailAndPassword(email, password),
 

@@ -12,6 +12,9 @@ export default function auth() {
     // Login with email and password
     signInWithEmailAndPassword: (email, password) => firebase.auth().signInWithEmailAndPassword(email, password),
 
+    // Logout current user
+    signOut: () => firebase.auth().signOut(),
+
     // Listener for auth change
     onAuthStateChanged: (callback) => {
       return firebase.auth().onAuthStateChanged(callback);
