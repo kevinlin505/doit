@@ -15,9 +15,10 @@ import {
   Input
 } from 'react-native-elements';
 import Icon from 'react-native-vector-icons/FontAwesome';
+import { actions as authActions } from '../providers/auth';
 import { actions as userActions } from '../providers/user';
-import validation from '../helpers/validation';
 import Colors from '../constants/Colors';
+import Layout from '../constants/Layout';
 import BG_IMAGE from '../assets/images/login_screen.jpg';
 
 class SignInScreen extends React.Component {
@@ -27,35 +28,38 @@ class SignInScreen extends React.Component {
   }
 
   state = {
-    confirmationPassword: '',
+    authError: '',
+    confirmPassword: '',
     email: '',
     password: '',
-    isConfirmationPasswordValid: true,
+    isAccountCreated: false,
+    isConfirmPasswordValid: true,
     isEmailValid: true,
     isPasswordValid: true,
-    registrationError: '',
     showLoading: false
   }
 
-  _signInAsync = async () => {
-    try {
-      await this.props.actions.user.loginWithFacebook();
-      this.props.navigation.navigate('Main');
-    } catch (error) {
-      this.setState({ loginError: `Sign in error!: ${error}` });
-    }
-  };
-
   handleEmailChange = (val) => this.setState({ email: val })
   handlePasswordChange = (val) => this.setState({ password: val })
+  handleConfirmPasswordChange = (val) => this.setState({ confirmPassword: val })
 
-  submitLoginCredentials = async () => {
+  submitLoginForm = async () => {
+    const error = await this.props.actions.auth.loginWithCredential(this.state.email, this.state.password);
+
+    if (!error) this.props.navigation.navigate('Main');
+    this.setState({ authError: error });
+  }
+
+  submitRegistrationForm = async () => {
     try {
-      const status = await this.props.actions.user.signUpWithEmailAndPassword(this.state.email, this.state.password);
-      console.log(status);
+      const user = await this.props.actions.auth.signUpWithEmailAndPassword(this.state.email, this.state.password);
+
+      // Send user an email verification if account created successfully.
+      if (user) await this.props.actions.auth.sendEmailVerification();
+
+      this.setState({ isAccountCreated: true });
     } catch (error) {
-      console.log(error.code);
-      this.setState({ registrationError: validation.registrationValidation(error.code) });
+      this.setState({ authError: error.message });
     }
   }
 
@@ -73,28 +77,33 @@ class SignInScreen extends React.Component {
   _validatePassword = () => {
     const { password } = this.state;
 
-    const isPasswordValid = password.length >= 8;
+    const re = /^([a-zA-Z0-9@\-_*#]{8,20})$/;
+    const isPasswordValid = re.test(password);
     LayoutAnimation.easeInEaseOut();
     this.setState({ isPasswordValid });
+
     return isPasswordValid || this.passwordInput.shake();
   }
 
-  _validateConfirmationPassword = () => {
-    const { password, confirmationPassword } = this.state
-    const isConfirmationPasswordValid = password === confirmationPassword
-    LayoutAnimation.easeInEaseOut()
-    this.setState({ isConfirmationPasswordValid })
-    isConfirmationPasswordValid || this.confirmationPasswordInput.shake()
-    return isConfirmationPasswordValid
+  _validateConfirmPassword = () => {
+    const { password, confirmPassword } = this.state;
+
+    const isConfirmPasswordValid = password === confirmPassword;
+    LayoutAnimation.easeInEaseOut();
+    this.setState({ isConfirmPasswordValid });
+
+    return isConfirmPasswordValid || this.confirmPasswordInput.shake();
   }
 
   render() {
     const {
       email,
+      isConfirmPasswordValid,
       isEmailValid,
+      isRegistrationFlow,
       isPasswordValid,
       password,
-      registrationError,
+      authError,
       showLoading
     } = this.state;
 
@@ -124,7 +133,7 @@ class SignInScreen extends React.Component {
                   autoCapitalize="none"
                   keyboardType="email-address"
                   returnKeyType="next"
-                  ref={input => this.emailInput = input}
+                  ref={input => (this.emailInput = input)}
                   onSubmitEditing={this._validateEmail}
                   placeholderTextColor="white"
                   errorStyle={styles.error}
@@ -148,12 +157,38 @@ class SignInScreen extends React.Component {
                   autoCapitalize="none"
                   keyboardType="default"
                   returnKeyType="done"
-                  ref={input => this.passwordInput = input}
-                  onSubmitEditing={this._validatePassword}
+                  ref={input => (this.passwordInput = input)}
+                  onSubmitEditing={this._validateConfirmPassword}
                   placeholderTextColor="white"
                   errorStyle={styles.error}
-                  errorMessage={registrationError}
+                  errorMessage={isPasswordValid ? null : "Password must be 8 chracters or longer"}
                 />
+                { isRegistrationFlow &&
+                  <Input
+                    leftIcon={
+                      <Icon
+                        name="lock"
+                        color="rgba(171, 189, 219, 1)"
+                        size={25}
+                      />
+                    }
+                    containerStyle={styles.inputContainer}
+                    onChangeText={this.handleConfirmPasswordChange}
+                    value={password}
+                    inputStyle={styles.input}
+                    secureTextEntry
+                    keyboardAppearance="light"
+                    placeholder="Confirn password"
+                    autoCapitalize="none"
+                    keyboardType="default"
+                    returnKeyType="done"
+                    ref={input => this.confirmPasswordInput = input}
+                    onSubmitEditing={isRegistrationFlow ? this._validateConfirmPassword : null}
+                    placeholderTextColor="white"
+                    errorStyle={styles.error}
+                    errorMessage={isPasswordValid ? null : "Password must be 8 chracters or longer"}
+                  />
+                }
               </View>
               <Button
                 title="LOG IN"
@@ -163,7 +198,7 @@ class SignInScreen extends React.Component {
                   start: [1, 0],
                   end: [0.2, 0]
                 }}
-                onPress={this.submitLoginCredentials}
+                onPress={this.submitLoginForm}
                 loading={showLoading}
                 loadingProps={{ size: 'small', color: 'white' }}
                 disabled={!email && password.length < 8}
@@ -179,9 +214,6 @@ class SignInScreen extends React.Component {
   }
 }
 
-const SCREEN_WIDTH = Dimensions.get('window').width;
-const SCREEN_HEIGHT = Dimensions.get('window').height;
-
 const styles = StyleSheet.create({
   container: {
     flex: 1
@@ -190,13 +222,13 @@ const styles = StyleSheet.create({
     flex: 1,
     top: 0,
     left: 0,
-    width: SCREEN_WIDTH,
-    height: SCREEN_HEIGHT,
+    width: Layout.window.width,
+    height: Layout.window.height,
     justifyContent: 'center',
     alignItems: 'center'
   },
   loginContainer: {
-    width: SCREEN_WIDTH,
+    width: Layout.window.width,
     height: 220,
     backgroundColor: 'transparent'
   },
@@ -235,13 +267,15 @@ const styles = StyleSheet.create({
   },
   error: {
     textAlign: 'center',
-    fontSize: 12
+    fontSize: 12,
+    color: Colors.accentColor
   }
 });
 
 export default connect(null, (dispatch) => {
   return {
     actions: {
+      auth: bindActionCreators(authActions, dispatch),
       user: bindActionCreators(userActions, dispatch)
     }
   };

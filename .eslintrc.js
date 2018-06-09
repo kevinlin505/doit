@@ -45,6 +45,7 @@ module.exports = {
     "no-mixed-operators": ["error", { "allowSamePrecedence": true }],
     "no-plusplus": ["error", { "allowForLoopAfterthoughts": true }],
     "no-underscore-dangle": [2, { "allowAfterThis": true }],
+    "no-return-assign": [2, "except-parens"],
     "no-var": "off",
     "no-use-before-define": ["error", { "functions": true, "classes": true, "variables": false }],
     "prefer-arrow-callback": ["error", { "allowNamedFunctions": true }],

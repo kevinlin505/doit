@@ -1,3 +1,4 @@
 constants/Firebase.js
 node_modules/**/*
 .expo/**/*
+.eslintcache

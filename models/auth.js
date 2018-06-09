@@ -1,10 +1,20 @@
+import * as firebase from 'firebase';
 import { AsyncStorage } from 'react-native';
 
-export default function auth(firebase) {
+export default function auth() {
   return {
+    // Send an email to user for email verification
+    sendEmailVerification: (actionCodeSettings = {}) => firebase.auth().currentUser.sendEmailVerification(actionCodeSettings),
+
     // Create an user without verification
-    createUserWithEmailAndPassword: async (email, password) => {
-      return firebase.auth().createUserWithEmailAndPassword(email, password);
+    createUserWithEmailAndPassword: (email, password) => firebase.auth().createUserWithEmailAndPassword(email, password),
+
+    // Login with email and password
+    signInWithEmailAndPassword: (email, password) => firebase.auth().signInWithEmailAndPassword(email, password),
+
+    // Listener for auth change
+    onAuthStateChanged: (callback) => {
+      return firebase.auth().onAuthStateChanged(callback);
     },
 
     // Login with FB account
