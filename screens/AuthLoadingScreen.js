@@ -12,7 +12,7 @@ import {
 import { actions as authActions } from '../providers/auth';
 import Colors from '../constants/Colors';
 import Layout from '../constants/Layout';
-import BG_IMAGE from '../assets/images/login_screen.jpg';
+import BG_IMAGE from '../assets/images/auth_screen.jpg';
 
 class AuthLoadingScreen extends React.Component {
   static propTypes = {
@@ -40,7 +40,11 @@ class AuthLoadingScreen extends React.Component {
    * This will switch to the App screen or Auth screen
    * and this loadingscreen will be unmounted and thrown away.
    */
-  checkUserSession = (user) => this.props.navigation.navigate(user ? 'Main' : 'Auth');
+  checkUserSession = (user) => {
+    const isEmailVerify = user && user.emailVerified;
+    this.props.actions.auth.setCurrentUser(user);
+    this.props.navigation.navigate(isEmailVerify ? 'Main' : 'Auth');
+  }
 
   render() {
     return (

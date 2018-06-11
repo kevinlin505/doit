@@ -5,6 +5,7 @@ export default {
   primaryColorText: '#ffffff',
   accentColor: '#ff5722',
   accentColorLight: '#f4466a',
+  accentColorDark: '#e91e63',
   primaryTextColor: '#212121',
   secondaryTextColor: '#757575',
   dividerColor: '#bdbdbd',

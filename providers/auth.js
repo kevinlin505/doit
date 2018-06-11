@@ -3,15 +3,14 @@ import db from '../models/_db';
 export const types = {
   INIT_DB_ERROR: 'AUTH/INIT_DB_ERROR',
   INIT_DB_SUCCESS: 'AUTH/INIT_DB_SUCCESS',
-  CHECK_SESSION: 'AUTH/CHECK_SESSION',
-  VALIDATE_USER_ERROR: 'AUTH/VALIDATE_USER_ERROR',
-  VALIDATE_USER_SUCCESS: 'AUTH/VALIDATE_USER_SUCCESS'
+  SET_CURRENT_USER: 'AUTH/SET_CURRENT_USER',
+  SET_EMAIL_VERIFICATION: 'AUTH/SET_EMAIL_VERIFICATION'
 };
 
 const initialState = {
-  isDBConnected: false,
-  isUserValidate: false,
-  isSessionActive: false
+  isDBConnect: false,
+  isUserEmailVerify: false,
+  currentUser: null
 };
 
 export default function reducer(state = initialState, action) {
@@ -19,35 +18,28 @@ export default function reducer(state = initialState, action) {
     case types.INIT_DB_ERROR: {
       return {
         ...state,
-        isDBConnected: false
+        isDBConnect: false
       };
     }
 
     case types.INIT_DB_SUCCESS: {
       return {
         ...state,
-        isDBConnected: true
+        isDBConnect: true
       };
     }
 
-    case types.CHECK_SESSION: {
+    case types.SET_CURRENT_USER: {
       return {
         ...state,
-        isSessionActive: action.status
+        currentUser: action.user
       };
     }
 
-    case types.VALIDATE_USER_ERROR: {
+    case types.SET_EMAIL_VERIFICATION: {
       return {
         ...state,
-        isUserValidate: false
-      };
-    }
-
-    case types.VALIDATE_USER_SUCCESS: {
-      return {
-        ...state,
-        isUserValidate: true
+        isUserEmailVerify: action.status
       };
     }
 
@@ -69,23 +61,17 @@ export const actions = {
       });
     }
   },
-  subscribeToAuthChange: (callback) => async () => {
-    db.auth().onAuthStateChanged(callback);
-  },
-  loginWithCredential: (email, password) => async () => {
+
+  loginWithCredential: (email, password) => async (dispatch) => {
     try {
       const user = await db.auth().signInWithEmailAndPassword(email, password);
+      dispatch(actions.setEmailVerification());
 
-      if (user && user.user && !user.user.emailVerified) return 'Please verify your email address!';
-
-      return false;
+      return user.user;
     } catch (error) {
-      return error.message;
+      return error;
     }
   },
-  logout: () => () => db.auth().signOut(),
-  sendEmailVerification: () => () => db.auth().sendEmailVerification(),
-  signUpWithEmailAndPassword: (email, password) => () => db.auth().createUserWithEmailAndPassword(email, password),
 
   loginWithFacebook: () => async (dispatch) => {
     try {
@@ -103,30 +89,41 @@ export const actions = {
     }
   },
 
-  validateUser: (token) => async (dispatch) => {
-    if (!token) {
-      dispatch({
-        type: types.VALIDATE_USER,
-        isValid: false
-      });
+  logout: () => () => db.auth().signOut(),
 
-      return false;
-    }
-
+  sendEmailVerification: () => async () => {
     try {
-      const userInfo = await db.task().retrieveDataWithCredential(token);
-
-      dispatch({
-        type: types.VALIDATE_USER,
-        isValid: true
-      });
-
-      return dispatch(actions.updateUser(userInfo.user.uid, userInfo.user.displayName));
+      await db.auth().sendEmailVerification();
     } catch (error) {
-      return dispatch({
-        type: types.VALIDATE_USER,
-        isValid: false
-      });
+      console.log(error);
     }
+  },
+
+  setCurrentUser: (user) => ({ type: types.SET_CURRENT_USER, user }),
+
+  setEmailVerification: (status) => ({ type: types.SET_EMAIL_VERIFICATION, status }),
+
+  signUpWithEmailAndPassword: (email, password) => async (dispatch) => {
+    try {
+      const user = await db.auth().createUserWithEmailAndPassword(email, password);
+
+      dispatch(actions.setEmailVerification());
+
+      if (user && user.user && !user.user.emailVerified) {
+        dispatch(actions.sendEmailVerification());
+      }
+
+      return user.user;
+    } catch (error) {
+      dispatch({
+        type: types.REGISTRATION_ERROR
+      });
+
+      return error;
+    }
+  },
+
+  subscribeToAuthChange: (callback) => async () => {
+    db.auth().onAuthStateChanged(callback);
   }
 };
