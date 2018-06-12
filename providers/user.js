@@ -20,6 +20,17 @@ export default function reducer(state = initialState, action) {
 }
 
 export const actions = {
+  updateUserProfile: (user) => async () => {
+    try {
+      const profile = await db.user().updateUserProfile(user);
+    } catch (error) {
+      console.error(error);
+    }
+  },
+
+
+
+
   createATask: (taskData = {}) => async (dispatch, getState) => {
     taskData.creator = {
       id: getState().user.id,

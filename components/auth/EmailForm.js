@@ -118,5 +118,5 @@ export default connect(null, (dispatch) => {
     actions: {
       auth: bindActionCreators(authActions, dispatch)
     }
-  }
+  };
 })(EmailForm);

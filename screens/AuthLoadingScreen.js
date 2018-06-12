@@ -10,6 +10,7 @@ import {
   View
 } from 'react-native';
 import { actions as authActions } from '../providers/auth';
+import { actions as userActions } from '../providers/user';
 import Colors from '../constants/Colors';
 import Layout from '../constants/Layout';
 import BG_IMAGE from '../assets/images/auth_screen.jpg';
@@ -42,7 +43,11 @@ class AuthLoadingScreen extends React.Component {
    */
   checkUserSession = (user) => {
     const isEmailVerify = user && user.emailVerified;
+
     this.props.actions.auth.setCurrentUser(user);
+    this.props.actions.user.updateUserProfile({
+      photoURL: 'https://lh3.googleusercontent.com/-nmXIkc4R4Kw/AAAAAAAAAAI/AAAAAAAAAAA/AB6qoq2wXeGKhdW6LAHXKNtvv0zORpaQTw/s32-c-mo/photo.jpg'
+    });
     this.props.navigation.navigate(isEmailVerify ? 'Main' : 'Auth');
   }
 
@@ -81,7 +86,8 @@ const styles = StyleSheet.create({
 export default connect(null, (dispatch) => {
   return {
     actions: {
-      auth: bindActionCreators(authActions, dispatch)
+      auth: bindActionCreators(authActions, dispatch),
+      user: bindActionCreators(userActions, dispatch)
     }
   };
 })(AuthLoadingScreen);

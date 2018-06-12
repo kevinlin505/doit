@@ -106,8 +106,8 @@ export const actions = {
   signUpWithEmailAndPassword: (email, password) => async (dispatch) => {
     try {
       const user = await db.auth().createUserWithEmailAndPassword(email, password);
-
-      dispatch(actions.setEmailVerification());
+      const profile = await db.user().createUserProfile();
+      console.log(profile);
 
       if (user && user.user && !user.user.emailVerified) {
         dispatch(actions.sendEmailVerification());
